@@ -1,42 +1,18 @@
 package main
 
-import (
-	"sort"
-)
-
-type word struct {
-	count int
-	index []int
-}
-
-func (w *word) seen(index int) {
-	w.count++
-	w.index = append(w.index, index)
-}
-
-func (w *word) fetch(strs []string) []string {
-	var result []string
-	for _, i := range w.index {
-		result = append(result, strs[i])
-	}
-	return result
-}
-
 func groupAnagrams(strs []string) [][]string {
-	index := make(map[string]*word, len(strs))
-	for i, s := range strs {
-		r := []rune(s)
-		sort.Slice(r, func(i, j int) bool { return r[i] < r[j] })
-		s = string(r)
-		if index[s] == nil {
-			index[s] = &word{count: 0, index: []int{}}
+	index := make(map[[26]int][]string, len(strs))
+	for _, s := range strs {
+		count := [26]int{}
+		for _, c := range s {
+			count[c-'a'] += 1
 		}
-		index[s].seen(i)
+		index[count] = append(index[count], s)
 	}
 
 	var result [][]string
-	for _, w := range index {
-		result = append(result, w.fetch(strs))
+	for _, s := range index {
+		result = append(result, s)
 	}
 
 	return result
